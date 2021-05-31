@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--引入bootstrap 开发响应式页面-->
+    <link rel="stylesheet" href="__CDN__/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+    <!--引入font-awesome图标字体库-->
+    <link rel="stylesheet" href="__CDN__/font-awesome-4.2.0/css/font-awesome.min.css">
+    <!--引入toastr 用于在页面显示提示信息  Jquery插件-->
+    <link rel="stylesheet" href="__CDN__/toastr.js/2.1.4/toastr.min.css">
+    <!--项目自身的css文件  放最后面,避免样式被覆盖 ; 静态版本控制-->
+    <link rel="stylesheet" href="__STATIC__/css/main.css">
+    <!--引入Jquery 简化Js代码-->
+    <script src="__CDN__/jquery/1.12.4/jquery.min.js"></script>
+    <!--引入bootstrap 开发响应式页面-->
+    <script src="__CDN__/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!--引入toastr 用于在页面显示提示信息  Jquery插件-->
+    <script src="__CDN__/toastr.js/2.1.4/toastr.min.js"></script>
+    <!--项目自身js文件  放在最后面,已确保自身文件依赖的库都已经被加载完整 ; 静态版本控制-->
+    <script src="__STATIC__/js/main.js">
+    </script>
+    <title>后台管理系统</title>
+</head>
+
+<body>
+    <!--编写 顶部导航栏 和 左侧菜单栏-->
+    <nav class="navbar navbar-default navbar-static-top main-nav" role="navigation">
+        <div class="navbar-header">
+            <!--一个折叠按钮, 在大屏幕中不显示 在小屏幕中，菜单会自动折叠起来-->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <!--菜单栏标题-->
+            <div class="navbar-brand">后台管理系统</div>
+        </div>
+        <div class="collapse navbar-collapse">
+            <div class="main-sidebar">
+                <ul class="nav main-menu">
+                    <!-- <li>
+                        <a href="{:url('Index/index')}" class="active">
+                            <i class="fa fa-home fa-fw"></i>首页
+                        </a>
+                    </li>
+                    <li class="main-sidebar-collapse">
+                        <a href="#" class="main-sidebar-collapse-btn">
+                            <i class="fa fa-cog fa-fw"></i>设置
+                            <span class="fa main-sidebar-arrow"></span>
+                        </a>
+                        <ul class="nav">
+                            <li><a href="{:url('test1')}"><i class="fa fa-cog fa-fw"></i>设置1</a></li>
+                            <li><a href="{:url('test2')}"><i class="fa fa-cog fa-fw"></i>设置2</a></li>
+                        </ul>
+                    </li> -->
+                    {foreach $layout_menu as $v}
+                    <!-- 判断$v.sub数组不为空且$v.curr为false -->
+                    <!-- 若判断成立, 表示这个菜单存在子项且非当前选中项, 此时设置class = main-sidebar-collapse 表示该项是一个已经收起来的双层项-->
+                    <li class="{if $v.sub && !$v.curr}main-sidebar-collapse{/if}">
+                        <!-- 第66行输出菜单项的链接 地址为 admin模块$v.controller控制器的index操作 -->
+                        <!-- 第67行 class属性中, main-sidebar-collapse-btn 用来为链接添加展开和收起的图标 "<"  active 表示将改项显示为选中效果-->
+                        <!-- 第68行 data-name属性 用来根据控制器名称查找对应的菜单项-->
+                        <a href="{:url('admin/'.$v.controller.'/index')}"
+                            class="{if $v.sub}main-sidebar-collapse-btn {else}{if $v.curr}active{/if}{/if}"
+                            data-name="{$v.controller}">
+                            <!-- 菜单图标 -->
+                            <i class="fa fa-{$v.icon} fa-fw"></i>{$v.name}{if $v.sub}
+                            <!-- 右侧小箭头 -->
+                            <span class="fa main-sidebar-arrow"></span>{/if}</a>
+                        <!-- 输出子项 -->
+                        {if $v.sub}
+                        <ul class="nav">
+                            {foreach $v.sub as $vv}
+                            <li>
+                                <a href="{:url('admin/'.$vv.controller.'/index')}" class="{if $vv.curr}active{/if}"
+                                    data-name="{$vv.controller}">
+                                    <i class="fa fa-{$vv.icon} fa-fw"></i>{$vv.name}</a>
+                            </li>
+                            {/foreach}
+                        </ul>
+                        {/if}
+                    </li>
+                    {/foreach}
+                </ul>
+            </div>
+            <!--将用户名和退出按钮链接放在大屏幕的顶部右侧-->
+            <ul class="nav navbar-right">
+                <li>
+                    <a href="{:url('Index/password')}" class="j-layout-pwd">
+                        <i class="fa fa-user fa-fw"></i>{$layout_login_user.username}
+                    </a>
+                </li>
+                <li>
+                    <a href="{:url('Index/logout')}">
+                        <i class="fa fa-power-off fa-fw"></i>退出
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <!--模态框页面结构-->
+    <div class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-body">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                  aria-hidden="true">&times;</span></button>
+              <div class="j-modal-content"></div>
+              <div class="main-loading" style="display:none">
+                <div class="dot-carousel"></div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary j-modal-submit">确定</button>
+              <button type="button" class="btn btn-default j-modal-cancel" data-dismiss="modal">取消</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <!--mian 脚本初始化, 保存服务端发送过来的令牌-->
+    <script>
+        main.init({
+            token: '{$layout_token}'
+        });
+    </script>
+    <div class="main-container">
+        <!--占位符 {__CONTENT__} 表示内容区域, 在模板解析时会自动替换成页面内容-->
+        <div class="main-content">{__CONTENT__}</div>
+        <!--默认隐藏加载提示-->
+        <div class="main-loading" style="display: none;">
+            <div class="dot-carouse1"></div>
+        </div>
+    </div>
+    <script>
+        main.layout();
+    </script>
+</body>
+
+</html>

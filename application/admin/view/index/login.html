@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--引入bootstrap 开发响应式页面-->
+    <link rel="stylesheet" href="__CDN__/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+    <!--引入toastr 用于在页面显示提示信息  Jquery插件-->
+    <link rel="stylesheet" href="__CDN__/toastr.js/2.1.4/toastr.min.css">
+    <!--项目自身的css文件  放最后面,避免样式被覆盖 ; 静态版本控制-->
+    <link rel="stylesheet"
+        href="__STATIC__/css/main.css?{if $Think.env.app_debug}_={:time()}{else /}v={$Think.config.tpadmin.version}{/if}">
+    <!--引入Jquery 简化Js代码-->
+    <script src="__CDN__/jquery/1.12.4/jquery.min.js"></script>
+    <!--引入bootstrap 开发响应式页面-->
+    <script src="__CDN__/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!--引入toastr 用于在页面显示提示信息  Jquery插件-->
+    <script src="__CDN__/toastr.js/2.1.4/toastr.min.js"></script>
+    <!--项目自身js文件  放在最后面,已确保自身文件依赖的库都已经被加载完整 ; 静态版本控制-->
+    <script
+        src="__STATIC__/js/main.js?{if $Think.env.app_debug}_={:time()}{else /}v={$Think.config.tpadmin.version}{/if}">
+    </script>
+    <title>登录</title>
+</head>
+
+<body class="login">
+    <div class="container">
+        <form method="post" class="j-login">
+            <h1>后台管理系统</h1>
+            <div class="form-group">
+                <input type="text" name="username" class="form-control" placeholder="用户名" required>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" class="form-control" placeholder="密码" required>
+            </div>
+            <div class="form-group">
+                <input type="text" name="captcha" class="form-control" placeholder="验证码" required>
+            </div>
+            <div class="form-group">
+                <div class="login-captcha"><img src="{:captcha_src()}" alt="captcha"></div>
+            </div>
+            <div class="form-group">
+                <input type="submit" class="btn btn-lg btn-success" value="登录">
+            </div>
+        </form>
+        <!--默认隐藏加载提示-->
+        <div class="main-loading" style="display:none">
+            <div class="dot-carousel"></div>
+        </div>
+    </div>
+
+    <!--js代码-->
+    <script>
+        // 初始化 (将令牌传入js并保存)
+        main.init({
+            token: '{$token}'
+        });
+        main.ajaxForm('.j-login', function () {
+            // 登录成功后跳转到后台首页 url()函数用来生成URL地址 其参数基本形式为 "模块/控制器/操作" 或 "控制器/操作"
+            location.href = "{:url('Index/index')}";
+        }, function () {
+            // 登录失败后更新验证码(默认情况下: 验证码在验证成功后会自动失效, 排除验证码正确而登录失败的BUG)
+            $('.login-captcha img').click();
+        });
+
+        // 实现点击验证码刷新功能
+        $('.login-captcha img').click(function () {
+            $(this).attr('src', '{:captcha_src()}' + '?_=' + Math.random());
+        });
+    </script>
+</body>
+
+</html>

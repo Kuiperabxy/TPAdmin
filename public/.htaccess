@@ -1,0 +1,14 @@
+<IfModule mod_rewrite.c>
+    # +FollowSyslink 开启符号链接(linux)  -Multiviews 关闭多视图搜索(开启会影响重写)
+    Options +FollowSymlinks -Multiviews
+    # 开启重写引擎
+    RewriteEngine On
+    # 配置重写条件:当请求的文件名不存在(既不是目录(d)也不是文件(f)时),执行重写规则
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    # 配置重写规则
+    # para1 ^(.*)$ 是一个正则表达式，用于捕获请求路径 其中： ^ 表示开头 $表示结束  .表示除换行符外任意一个字符 * 表示匹配{0,∞}次
+    # para2 index.php/$1  重写后的路径  重写给index.php/$1 其中 $1是引用^(.*)$ 的捕获结果
+    # para3 QSA 表示 追加查询字符串，若省略则无法将查询字符串传递给index.php; PT表示移交给下一个处理器，避免影响其他模块的功能; L表示不再应用其他重写规则(对于有多个重写规则的情况)
+    RewriteRule ^(.*)$ index.php/$1 [QSA,PT,L]
+</IfModule>
